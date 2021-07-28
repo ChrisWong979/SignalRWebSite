@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.SignalR;
 using Microsoft.Owin;
 using Owin;
+using System;
 using System.IO;
 using System.Linq;
 
@@ -14,13 +15,19 @@ public class Startup
         {
             return;
         };
-        using (TextReader tr = new StreamReader(e.FullPath))
+        try
         {
-            var text = tr.ReadLine() + " °C";
-            var context = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
-            context.Clients.All.broadcastMessage("server", text);
-            tr.Close();
-        }    
+            using (TextReader tr = new StreamReader(e.FullPath))
+            {
+                var text = tr.ReadLine() + " °C";
+                var context = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
+                context.Clients.All.broadcastMessage("server", text);
+            }
+        }
+        catch
+        {
+            // ignore any error
+        } 
     }
 
     public void Configuration(IAppBuilder app)

@@ -14,9 +14,13 @@ public class Startup
         {
             return;
         };
-        var text = File.ReadLines(e.FullPath).Last() + " °C";
-        var context = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
-        context.Clients.All.broadcastMessage("server", text);
+        using (TextReader tr = new StreamReader(e.FullPath))
+        {
+            var text = tr.ReadLine() + " °C";
+            var context = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
+            context.Clients.All.broadcastMessage("server", text);
+            tr.Close();
+        }    
     }
 
     public void Configuration(IAppBuilder app)
